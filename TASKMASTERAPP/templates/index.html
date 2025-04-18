@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="keywords" content="task management, productivity, collaboration, task scheduling"/>
+    <meta property="og:title" content="TaskMaster | Smart Task Management Solution"/>
+    <meta property="og:description" content="TaskMaster is a smart task management solution that helps you stay Organized"/>
+    <meta property="og:image"content="https://yourwebsite.com/assets/hero-dashboard.png"/>
+    <meta property="og:url" content="https://yourwebsite.com" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>TaskMaster | Smart Task Management Solution</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+    <!-- GSAP and ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#2563eb',
+              'primary-hover': '#1d4ed8',
+              secondary: '#64748b',
+              'background-light': '#f8fafc',
+              'text-dark': '#0f172a',
+              'text-light': '#64748b',
+            },
+            fontFamily: {
+              sans: ['Poppins', 'sans-serif'],
+            },
+          },
+        },
+      }
+    </script>
+  </head>
+  <body class="font-sans text-text-dark leading-relaxed">
+    <header class="bg-white shadow-sm fixed w-full top-0 z-50">
+      <nav class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2 font-semibold text-xl text-primary">
+          <i class="fas fa-tasks"></i>
+          <a href="{% url 'index' %}"><span>TaskMaster</span></a>
+        </div>
+        <ul class="hidden md:flex gap-8 list-none">
+          <li><a href="#features" class="text-text-dark font-medium hover:text-primary transition-colors">Features</a></li>
+          {% if user.is_authenticated %}
+            <li><a href="{% url 'shop:product_list' %}" class="text-text-dark font-medium hover:text-primary transition-colors">Shop</a></li>
+          {% endif %}
+          <li><a href="#testimonials" class="text-text-dark font-medium hover:text-primary transition-colors">Testimonials</a></li>
+          <li><a href="#pricing" class="text-text-dark font-medium hover:text-primary transition-colors">Pricing</a></li>
+        </ul>
+        <div class="hidden md:flex gap-4">
+          {% if user.is_authenticated %}
+            {% if user.user_type == 'admin' %}
+              <a href="{% url 'admin_dashboard' %}" class="px-5 py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary-hover transition-all">Admin Panel</a>
+              <a href="{% url 'user_logout' %}" class="px-5 py-2 rounded-lg text-text-dark font-medium transition-all">Logout</a>
+            {% else %}
+              <a href="{% url 'dashboard' %}" class="px-5 py-2 rounded-lg text-text-dark font-medium transition-all">Dashboard</a>
+              <a href="{% url 'user_logout' %}" class="px-5 py-2 rounded-lg text-text-dark font-medium transition-all">Logout</a>
+            {% endif %}
+          {% else %}
+            <a href="{% url 'login' %}" class="px-5 py-2 rounded-lg text-text-dark font-medium transition-all">Login</a>
+            <a href="{% url 'register' %}" class="px-5 py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary-hover transition-all">Sign Up</a>
+          {% endif %}
+        </div>
+        <button class="md:hidden text-2xl text-text-dark">
+          <i class="fas fa-bars"></i>
+        </button>
+      </nav>
+    </header>
+
+    <main class="pt-16">
+      <section class="relative flex items-center justify-center py-32 px-[10%] bg-gradient-to-r from-blue-900 via-primary to-blue-400 text-white text-left overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent animate-pulse"></div>
+        <div class="flex items-center max-w-7xl w-full z-10">
+          <div class="max-w-[50%] animate-fadeInLeft" id="hero-text">
+            <h1 class="text-5xl font-bold mb-4 leading-tight">Master Your Tasks, Effortlessly</h1>
+            <p class="text-xl text-blue-100 mb-8">
+              Stay ahead with a powerful, AI-driven task management system that
+              keeps you productive and organized.
+            </p>
+            <div class="flex gap-4">
+              {% if user.is_authenticated %}
+                <span class="px-7 py-4 text-base font-semibold rounded-lg bg-yellow-200 text-blue-300 cursor-not-allowed shadow-lg shadow-yellow-400/30">
+                  Get Started for Free
+                </span>
+              {% else %}
+                <a href="{% url 'register' %}" class="px-7 py-4 text-base font-semibold rounded-lg bg-yellow-400 text-blue-900 shadow-lg shadow-yellow-400/30 hover:bg-yellow-500 transition-all">
+                  Get Started for Free
+                </a>
+              {% endif %}
+              
+              <a href="#features" class="px-7 py-4 text-base font-semibold rounded-lg border-2 border-white text-white hover:bg-white hover:text-blue-900 transition-all">
+                Explore Features
+              </a>
+            </div>
+            
+          </div>
+          <div class="flex-1 flex justify-center items-center animate-fadeInUp" id="hero-image">
+            <img
+              src="../static/assets/hero-dashboard.png"
+              alt="TaskMaster Dashboard Preview"
+              class="max-w-[90%] rounded-xl shadow-2xl"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="py-24 px-5% bg-gradient-to-r from-indigo-50 to-blue-100 text-center">
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-4xl font-bold text-blue-900 mb-2" id="features-title">Everything You Need to Stay Organized</h2>
+          <p class="text-xl text-gray-600 mb-10" id="features-subtitle">
+            Supercharge your productivity with powerful features designed for
+            seamless task management.
+          </p>
+
+          <a href="{% url 'calendar' %}">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+              <div class="bg-white p-10 rounded-2xl shadow-lg hover:-translate-y-2 hover:shadow-xl transition-all feature-card" data-index="0">
+                <div class="text-5xl text-primary mb-5 transition-transform hover:scale-110">
+                  <i class="fas fa-calendar-alt"></i>
+                </div>
+                <h3 class="text-2xl font-semibold text-blue-900 mb-2">Task Scheduling</h3>
+                <p class="text-gray-700">
+                  Effortlessly plan, prioritize, and automate your tasks with
+                  recurring options.
+                </p>
+              </div>
+          </a>
+
+            <div class="bg-white p-10 rounded-2xl shadow-lg hover:-translate-y-2 hover:shadow-xl transition-all feature-card" data-index="1">
+              <div class="text-5xl text-primary mb-5 transition-transform hover:scale-110">
+                <i class="fas fa-bell"></i>
+              </div>
+              <h3 class="text-2xl font-semibold text-blue-900 mb-2">Smart Reminders</h3>
+              <p class="text-gray-700">
+                Stay on top of deadlines with AI-powered reminders tailored to
+                your workflow.
+              </p>
+            </div>
+
+            <div class="bg-white p-10 rounded-2xl shadow-lg hover:-translate-y-2 hover:shadow-xl transition-all feature-card" data-index="2">
+              <div class="text-5xl text-primary mb-5 transition-transform hover:scale-110">
+                <i class="fas fa-users"></i>
+              </div>
+              <h3 class="text-2xl font-semibold text-blue-900 mb-2">Team Collaboration</h3>
+              <p class="text-gray-700">
+                Share tasks, assign roles, and collaborate in real time with
+                your team.
+              </p>
+            </div>
+
+            <div class="bg-white p-10 rounded-2xl shadow-lg hover:-translate-y-2 hover:shadow-xl transition-all feature-card" data-index="3">
+              <div class="text-5xl text-primary mb-5 transition-transform hover:scale-110">
+                <i class="fas fa-cloud-upload-alt"></i>
+              </div>
+              <h3 class="text-2xl font-semibold text-blue-900 mb-2">Cloud Sync</h3>
+              <p class="text-gray-700">
+                Access your tasks anytime, anywhere with seamless cloud
+                synchronization.
+              </p>
+            </div>
+
+            <div class="bg-white p-10 rounded-2xl shadow-lg hover:-translate-y-2 hover:shadow-xl transition-all feature-card" data-index="4">
+              <div class="text-5xl text-primary mb-5 transition-transform hover:scale-110">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <h3 class="text-2xl font-semibold text-blue-900 mb-2">Progress Tracking</h3>
+              <p class="text-gray-700">
+                Visualize your achievements with interactive charts and
+                performance reports.
+              </p>
+            </div>
+
+            <div class="bg-white p-10 rounded-2xl shadow-lg hover:-translate-y-2 hover:shadow-xl transition-all feature-card" data-index="5">
+              <div class="text-5xl text-primary mb-5 transition-transform hover:scale-110">
+                <i class="fas fa-cogs"></i>
+              </div>
+              <h3 class="text-2xl font-semibold text-blue-900 mb-2">Custom Alerts</h3>
+              <p class="text-gray-700">
+                Set up personalized notifications to keep your workflow smooth
+                and efficient.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="how-it-works" class="py-20 px-5 bg-background-light text-center">
+        <h2 class="text-4xl font-bold text-text-dark mb-2" id="how-it-works-title">How TaskMaster Works</h2>
+        <p class="text-lg text-text-light mb-10" id="how-it-works-subtitle">
+          Simple steps to boost your productivity and stay organized.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <div class="bg-white rounded-xl p-8 shadow-md hover:-translate-y-2 hover:shadow-lg transition-all step-card" data-index="0">
+            <div class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center text-2xl font-semibold mx-auto mb-5">
+              1
+            </div>
+            <h3 class="text-2xl font-semibold text-text-dark mb-4">Create Your Account</h3>
+            <p class="text-text-light mb-5">
+              Sign up in seconds and customize your workspace to fit your needs.
+            </p>
+            <div class="text-4xl text-primary">
+              <i class="fas fa-user-plus"></i>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl p-8 shadow-md hover:-translate-y-2 hover:shadow-lg transition-all step-card" data-index="1">
+            <div class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center text-2xl font-semibold mx-auto mb-5">
+              2
+            </div>
+            <h3 class="text-2xl font-semibold text-text-dark mb-4">Add Your Tasks</h3>
+            <p class="text-text-light mb-5">
+              Quickly input tasks, set deadlines, and organize them into
+              projects.
+            </p>
+            <div class="text-4xl text-primary">
+              <i class="fas fa-tasks"></i>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl p-8 shadow-md hover:-translate-y-2 hover:shadow-lg transition-all step-card" data-index="2">
+            <div class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center text-2xl font-semibold mx-auto mb-5">
+              3
+            </div>
+            <h3 class="text-2xl font-semibold text-text-dark mb-4">Stay Productive</h3>
+            <p class="text-text-light mb-5">
+              Track progress, collaborate with your team, and complete tasks
+              efficiently.
+            </p>
+            <div class="text-4xl text-primary">
+              <i class="fas fa-chart-line"></i>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="testimonials" class="py-20 px-5 bg-background-light text-center">
+        <h2 class="text-4xl font-bold text-text-dark mb-2" id="testimonials-title">What Our Users Say</h2>
+        <p class="text-lg text-text-light mb-10" id="testimonials-subtitle">
+          Hear from our satisfied users who have transformed their productivity
+          with TaskMaster.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-7xl mx-auto">
+          <div class="bg-white rounded-xl p-8 shadow-md hover:-translate-y-2 hover:shadow-lg transition-all testimonial-card" data-index="0">
+            <div class="flex items-center gap-4 mb-5">
+              <img src="../static/assets/sarah.png" alt="Sarah Johnson" class="w-16 h-16 rounded-full object-cover" />
+              <div>
+                <h4 class="text-lg font-semibold text-text-dark">Sarah Johnson</h4>
+                <span class="text-sm text-text-light">Freelance Designer</span>
+              </div>
+            </div>
+            <p class="text-text-light mb-5">
+              "TaskMaster has transformed how I manage my daily tasks. Highly
+              recommended!"
+            </p>
+            <div class="text-yellow-400 text-lg">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl p-8 shadow-md hover:-translate-y-2 hover:shadow-lg transition-all testimonial-card" data-index="1">
+            <div class="flex items-center gap-4 mb-5">
+              <img src="../static/assets/Mike.png" alt="Mike Stevens" class="w-16 h-16 rounded-full object-cover" />
+              <div>
+                <h4 class="text-lg font-semibold text-text-dark">Mike Stevens</h4>
+                <span class="text-sm text-text-light">Project Manager</span>
+              </div>
+            </div>
+            <p class="text-text-light mb-5">
+              "Perfect for our team collaboration. We've increased productivity
+              by 40%."
+            </p>
+            <div class="text-yellow-400 text-lg">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="py-20 px-4 bg-gradient-to-r from-primary to-primary-hover text-white text-center" id="cta-section">
+        <h2 class="text-4xl font-bold mb-4" id="cta-title">Ready to Get Started?</h2>
+        <p class="text-xl mb-8" id="cta-subtitle">
+          Join thousands of users who trust TaskMaster for their task management
+          needs.
+        </p>
+        <div class="flex gap-4 justify-center" id="cta-buttons">
+          <a href="{% url 'register' %}" class="px-7 py-4 text-base font-semibold rounded-lg bg-yellow-400 text-blue-900 shadow-lg shadow-yellow-400/30 hover:bg-yellow-500 transition-all">Start Free Trial</a>
+          <a href="{% url 'demo' %}" class="px-7 py-4 text-base font-semibold rounded-lg border-2 border-white text-white hover:bg-white hover:text-blue-900 transition-all">Watch Demo</a>
+        </div>
+      </section>
+
+      <section id="pricing" class="py-16 px-5 bg-gray-50 text-center">
+        <h2 class="text-4xl font-bold text-gray-800 mb-2" id="pricing-title">Flexible Plans for Everyone</h2>
+        <p class="text-base text-gray-600 mb-10" id="pricing-subtitle">
+          Choose the plan that fits your needs and boost your productivity
+          today.
+        </p>
+        <div class="flex flex-wrap justify-center gap-8 max-w-7xl mx-auto">
+          <div class="bg-white rounded-xl p-8 shadow-md w-full max-w-sm hover:-translate-y-2 hover:shadow-lg transition-all pricing-card" data-index="0">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-2">Free Plan</h3>
+            <p class="text-gray-600 mb-5 text-sm">Perfect for individuals getting started with task management.</p>
+            <span class="text-4xl font-bold text-gray-800 block mb-5">₹0<span class="text-base font-normal text-gray-600">/month</span></span>
+            <ul class="text-left mb-8">
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Up to 5 projects</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Basic task scheduling</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Reminders for deadlines</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Basic progress tracking</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Email notifications</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-times text-red-500 mr-3"></i> No collaboration features</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-times text-red-500 mr-3"></i> No cloud sync</li>
+            </ul>
+            <a href="{% url 'register' %}" class="block w-full py-3 text-center font-bold rounded-lg bg-primary text-white hover:bg-primary-hover transition-all">Get Started</a>
+          </div>
+
+          <div class="bg-white rounded-xl p-8 shadow-md w-full max-w-sm hover:-translate-y-2 hover:shadow-lg transition-all relative border-2 border-primary pricing-card" data-index="1">
+            <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-white px-5 py-1 rounded-full text-xs font-bold uppercase">Most Popular</div>
+            <h3 class="text-2xl font-semibold text-gray-800 mb-2">Premium Plan</h3>
+            <p class="text-gray-600 mb-5 text-sm">Advanced features for teams and professionals.</p>
+            <span class="text-4xl font-bold text-gray-800 block mb-5">₹149<span class="text-base font-normal text-gray-600">/month</span></span>
+            <ul class="text-left mb-8">
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Unlimited projects</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Advanced task scheduling</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Real-time collaboration</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Cloud sync across devices</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Priority support</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Customizable notifications</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Task dependencies</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Advanced progress tracking</li>
+            </ul>
+            <a href="{% url 'register' %}" class="block w-full py-3 text-center font-bold rounded-lg bg-primary text-white hover:bg-primary-hover transition-all">Upgrade Now</a>
+          </div>
+
+          <div class="bg-white rounded-xl p-8 shadow-md w-full max-w-sm hover:-translate-y-2 hover:shadow-lg transition-all border-2 border-primary pricing-card" data-index="2">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-2">Business Plan</h3>
+            <p class="text-gray-600 mb-5 text-sm">For teams and organizations needing advanced collaboration.</p>
+            <span class="text-4xl font-bold text-gray-800 block mb-5">₹399<span class="text-base font-normal text-gray-600">/month</span></span>
+            <ul class="text-left mb-8">
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Unlimited projects</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Advanced analytics</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Team collaboration tools</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Dedicated account manager</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> 24/7 premium support</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Custom integrations</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Advanced security features</li>
+              <li class="flex items-center mb-3 text-sm text-gray-600"><i class="fas fa-check text-blue-600 mr-3"></i> Workflow automation</li>
+            </ul>
+            <a href="{% url 'register' %}" class="block w-full py-3 text-center font-bold rounded-lg bg-primary text-white hover:bg-primary-hover transition-all">Contact Sales</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bg-text-dark text-white pt-16 pb-4 px-4">
+      <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+        <div>
+          <h4 class="text-lg font-semibold mb-6">Company</h4>
+          <ul class="space-y-3">
+            <li><a href="{% url 'about' %}" class="text-white/80 hover:text-white transition-colors">About Us</a></li>
+            <li><a href="#careers" class="text-white/80 hover:text-white transition-colors">Careers</a></li>
+            <li><a href="#press" class="text-white/80 hover:text-white transition-colors">Press</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-lg font-semibold mb-6">Resources</h4>
+          <ul class="space-y-3">
+            <li><a href="#blog" class="text-white/80 hover:text-white transition-colors">Blog</a></li>
+            <li><a href="#guides" class="text-white/80 hover:text-white transition-colors">Guides</a></li>
+            <li><a href="#help" class="text-white/80 hover:text-white transition-colors">Help Center</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-lg font-semibold mb-6">Legal</h4>
+          <ul class="space-y-3">
+            <li><a href="#privacy" class="text-white/80 hover:text-white transition-colors">Privacy Policy</a></li>
+            <li><a href="#terms" class="text-white/80 hover:text-white transition-colors">Terms of Service</a></li>
+            <li><a href="#security" class="text-white/80 hover:text-white transition-colors">Security</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-lg font-semibold mb-6">Connect With Us</h4>
+          <div class="flex gap-4">
+            <a href="https://www.instagram.com/task.master2025?igsh=MXI1eXN2eWFpY2hpZw==" aria-label="Instagram" class="text-white hover:text-primary transition-colors text-2xl"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.linkedin.com/in/keshav-gupta-751925324" aria-label="LinkedIn" class="text-white hover:text-primary transition-colors text-2xl"><i class="fab fa-linkedin"></i></a>
+            <a href="https://www.facebook.com/share/17wK5DKFH3/" aria-label="Facebook" class="text-white hover:text-primary transition-colors text-2xl"><i class="fab fa-facebook"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="text-center pt-8 border-t border-white/10">
+        <p class="text-white/60 text-sm">&copy; 2025 TaskMaster. All Rights Reserved.</p>
+      </div>
+    </footer>
+
+    <style>
+      @keyframes fadeInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      .animate-fadeInLeft {
+        animation: fadeInLeft 1s ease-in-out;
+      }
+      
+      .animate-fadeInUp {
+        animation: fadeInUp 1.2s ease-in-out;
+      }
+      
+      /* GSAP Animation Classes */
+      .gsap-fade-in {
+        opacity: 0;
+      }
+      
+      .gsap-slide-up {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      
+      .gsap-slide-in-left {
+        opacity: 0;
+        transform: translateX(-50px);
+      }
+      
+      .gsap-slide-in-right {
+        opacity: 0;
+        transform: translateX(50px);
+      }
+      
+      .gsap-scale-up {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+    </style>
+
+    <script>
+      // Register ScrollTrigger plugin
+      gsap.registerPlugin(ScrollTrigger);
+      
+      // Initialize GSAP animations
+      document.addEventListener('DOMContentLoaded', function() {
+        // Set default ease for all animations
+        gsap.defaults({ ease: "power2.out" });
+        
+        // Hero section animations with smoother timing
+        gsap.from("#hero-text", {
+          duration: 1.5,
+          x: -100,
+          opacity: 0,
+          ease: "power3.out",
+          delay: 0.2,
+          onComplete: function() {
+            gsap.set("#hero-text", { clearProps: "all" });
+          }
+        });
+        
+        gsap.from("#hero-image", {
+          duration: 1.5,
+          y: 50,
+          opacity: 0,
+          ease: "power3.out",
+          delay: 0.4,
+          onComplete: function() {
+            gsap.set("#hero-image", { clearProps: "all" });
+          }
+        });
+        
+        // Add subtle parallax to hero background
+        gsap.to(".absolute.inset-0", {
+          scrollTrigger: {
+            trigger: "main",
+            start: "top top",
+            end: "bottom top",
+            scrub: 1
+          },
+          y: 100,
+          ease: "none"
+        });
+        
+        // Features section animations with improved timing
+        gsap.from("#features-title", {
+          scrollTrigger: {
+            trigger: "#features",
+            start: "top 80%",
+            toggleActions: "play none none none"
+          },
+          duration: 1,
+          y: 30,
+          opacity: 0,
+          ease: "power3.out",
+          onComplete: function() {
+            gsap.set("#features-title", { clearProps: "all" });
+          }
+        });
+        
+        gsap.from("#features-subtitle", {
+          scrollTrigger: {
+            trigger: "#features",
+            start: "top 80%",
+            toggleActions: "play none none none"
+          },
+          duration: 1,
+          y: 20,
+          opacity: 0,
+          ease: "power3.out",
+          delay: 0.2,
+          onComplete: function() {
+            gsap.set("#features-subtitle", { clearProps: "all" });
+          }
+        });
+        
+        // Animate feature cards with improved stagger and timing
+        const featureCards = document.querySelectorAll('.feature-card');
+        featureCards.forEach((card, index) => {
+          // Add a subtle hover animation
+          card.addEventListener('mouseenter', function() {
+            gsap.to(this, {
+              duration: 0.3,
+              y: -10,
+              boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+              ease: "power2.out"
+            });
+          });
+          
+          card.addEventListener('mouseleave', function() {
+            gsap.to(this, {
+              duration: 0.3,
+              y: 0,
+              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+              ease: "power2.out"
+            });
+          });
+          
+          // Scroll animation
+          gsap.from(card, {
+            scrollTrigger: {
+              trigger: card,
+              start: "top 85%",
+              toggleActions: "play none none none"
+            },
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            ease: "power3.out",
+            delay: index * 0.15,
+            onComplete: function() {
+              gsap.set(card, { clearProps: "all" });
+            }
+          });
+        });
+        
+        // How it works section animations with improved timing
+        gsap.from("#how-it-works-title", {
+          scrollTrigger: {
+            trigger: "#how-it-works",
+            start: "top 80%",
+            toggleActions: "play none none none"
+          },
+          duration: 1,
+          y: 30,
+          opacity: 0,
+          ease: "power3.out",
+          onComplete: function() {
+            gsap.set("#how-it-works-title", { clearProps: "all" });
+          }
+        });
+        
+        gsap.from("#how-it-works-subtitle", {
+          scrollTrigger: {
+            trigger: "#how-it-works",
+            start: "top 80%",
+            toggleActions: "play none none none"
+          },
+          duration: 1,
+          y: 20,
+          opacity: 0,
+          ease: "power3.out",
+          delay: 0.2,
+          onComplete: function() {
+            gsap.set("#how-it-works-subtitle", { clearProps: "all" });
+          }
+        });
+        
+        // Animate step cards with improved stagger and timing
+        const stepCards = document.querySelectorAll('.step-card');
+        stepCards.forEach((card, index) => {
+          // Add a subtle hover animation
+          card.addEventListener('mouseenter', function() {
+            gsap.to(this, {
+              duration: 0.3,
+              y: -10,
+              boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+              ease: "power2.out"
+            });
+          });
+          
+          card.addEventListener('mouseleave', function() {
+            gsap.to(this, {
+              duration: 0.3,
+              y: 0,
+              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+              ease: "power2.out"
+            });
+          });
+          
+          // Scroll animation
+          gsap.from(card, {
+            scrollTrigger: {
+              trigger: card,
+              start: "top 85%",
+              toggleActions: "play none none none"
+            },
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            ease: "power3.out",
+            delay: index * 0.25,
+            onComplete: function() {
+              gsap.set(card, { clearProps: "all" });
+            }
+          });
+        });
+        
+        // Testimonials section animations with improved timing
+        gsap.from("#testimonials-title", {
+          scrollTrigger: {
+            trigger: "#testimonials",
+            start: "top 80%",
+            toggleActions: "play none none none"
+          },
+          duration: 1,
+          y: 30,
+          opacity: 0,
+          ease: "power3.out",
+          onComplete: function() {
+            gsap.set("#testimonials-title", { clearProps: "all" });
+          }
+        });
+        
+        gsap.from("#testimonials-subtitle", {
+          scrollTrigger: {
+            trigger: "#testimonials",
+            start: "top 80%",
+            toggleActions: "play none none none"
+          },
+          duration: 1,
+          y: 20,
+          opacity: 0,
+          ease: "power3.out",
+          delay: 0.2,
+          onComplete: function() {
+            gsap.set("#testimonials-subtitle", { clearProps: "all" });
+          }
+        });
+        
+        // Animate testimonial cards with improved stagger and timing
+        const testimonialCards = document.querySelectorAll('.testimonial-card');
+        testimonialCards.forEach((card, index) => {
+          // Add a subtle hover animation
+          card.addEventListener('mouseenter', function() {
+            gsap.to(this, {
+              duration: 0.3,
+              y: -10,
+              boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+              ease: "power2.out"
+            });
+          });
+          
+          card.addEventListener('mouseleave', function() {
+            gsap.to(this, {
+              duration: 0.3,
+              y: 0,
+              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+              ease: "power2.out"
+            });
+          });
+          
+          // Scroll animation
+          gsap.from(card, {
+            scrollTrigger: {
+              trigger: card,
+              start: "top 85%",
+              toggleActions: "play none none none"
+            },
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            ease: "power3.out",
+            delay: index * 0.3,
+            onComplete: function() {
+              gsap.set(card, { clearProps: "all" });
+            }
+          });
+        });
+        
+        // CTA section animations with improved timing
+        gsap.from("#cta-title", {
+          scrollTrigger: {
+            trigger: "#cta-section",
+            start: "top 80%",
+            toggleActions: "play none none none"
+          },
+          duration: 1,
+          y: 30,
+          opacity: 0,
+          ease: "power3.out",
+          onComplete: function() {
+            gsap.set("#cta-title", { clearProps: "all" });
+          }
+        });
+        
+        gsap.from("#cta-subtitle", {
+          scrollTrigger: {
+            trigger: "#cta-section",
+            start: "top 80%",
+            toggleActions: "play none none none"
+          },
+          duration: 1,
+          y: 20,
+          opacity: 0,
+          ease: "power3.out",
+          delay: 0.2,
+          onComplete: function() {
+            gsap.set("#cta-subtitle", { clearProps: "all" });
+          }
+        });
+        
+        gsap.from("#cta-buttons", {
+          scrollTrigger: {
+            trigger: "#cta-section",
+            start: "top 80%",
+            toggleActions: "play none none none"
+          },
+          duration: 1,
+          y: 20,
+          opacity: 0,
+          ease: "power3.out",
+          delay: 0.4,
+          onComplete: function() {
+            gsap.set("#cta-buttons", { clearProps: "all" });
+          }
+        });
+        
+        // Pricing section animations with improved timing
+        gsap.from("#pricing-title", {
+          scrollTrigger: {
+            trigger: "#pricing",
+            start: "top 80%",
+            toggleActions: "play none none none"
+          },
+          duration: 1,
+          y: 30,
+          opacity: 0,
+          ease: "power3.out",
+          onComplete: function() {
+            gsap.set("#pricing-title", { clearProps: "all" });
+          }
+        });
+        
+        gsap.from("#pricing-subtitle", {
+          scrollTrigger: {
+            trigger: "#pricing",
+            start: "top 80%",
+            toggleActions: "play none none none"
+          },
+          duration: 1,
+          y: 20,
+          opacity: 0,
+          ease: "power3.out",
+          delay: 0.2,
+          onComplete: function() {
+            gsap.set("#pricing-subtitle", { clearProps: "all" });
+          }
+        });
+        
+        // Animate pricing cards with improved stagger and timing
+        const pricingCards = document.querySelectorAll('.pricing-card');
+        pricingCards.forEach((card, index) => {
+          // Add a subtle hover animation
+          card.addEventListener('mouseenter', function() {
+            gsap.to(this, {
+              duration: 0.3,
+              y: -10,
+              boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+              ease: "power2.out"
+            });
+          });
+          
+          card.addEventListener('mouseleave', function() {
+            gsap.to(this, {
+              duration: 0.3,
+              y: 0,
+              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+              ease: "power2.out"
+            });
+          });
+          
+          // Scroll animation
+          gsap.from(card, {
+            scrollTrigger: {
+              trigger: card,
+              start: "top 85%",
+              toggleActions: "play none none none"
+            },
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            ease: "power3.out",
+            delay: index * 0.25,
+            onComplete: function() {
+              gsap.set(card, { clearProps: "all" });
+            }
+          });
+        });
+        
+        // Add a smooth scroll effect for the entire page
+        const lenis = new Lenis({
+          duration: 1.2,
+          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          direction: 'vertical',
+          gestureDirection: 'vertical',
+          smooth: true,
+          smoothTouch: false,
+          touchMultiplier: 2,
+        });
+        
+        // Integrate Lenis with GSAP
+        function raf(time) {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        }
+        
+        requestAnimationFrame(raf);
+        
+        // Smooth scroll for anchor links with improved behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+          anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+            
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+              // Use Lenis for smooth scrolling
+              lenis.scrollTo(targetElement, {
+                offset: -80,
+                duration: 1.5,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+              });
+            }
+          });
+        });
+        
+        // Add a subtle parallax effect to the header
+        gsap.to("header", {
+          scrollTrigger: {
+            trigger: "body",
+            start: "top top",
+            end: "+=100",
+            scrub: 1
+          },
+          y: -20,
+          opacity: 0.9,
+          ease: "none"
+        });
+        
+        // Add a subtle scale effect to the logo on scroll
+        gsap.to("header .text-primary", {
+          scrollTrigger: {
+            trigger: "body",
+            start: "top top",
+            end: "+=100",
+            scrub: 1
+          },
+          scale: 0.9,
+          ease: "none"
+        });
+      });
+    </script>
+  </body>
+</html>

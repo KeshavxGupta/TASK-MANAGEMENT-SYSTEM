@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Calendar</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: '#eff6ff',
+                100: '#dbeafe',
+                200: '#bfdbfe',
+                300: '#93c5fd',
+                400: '#60a5fa',
+                500: '#3b82f6',
+                600: '#2563eb',
+                700: '#1d4ed8',
+                800: '#1e40af',
+                900: '#1e3a8a',
+              },
+              secondary: {
+                50: '#f8fafc',
+                100: '#f1f5f9',
+                200: '#e2e8f0',
+                300: '#cbd5e1',
+                400: '#94a3b8',
+                500: '#64748b',
+                600: '#475569',
+                700: '#334155',
+                800: '#1e293b',
+                900: '#0f172a',
+              },
+              success: {
+                50: '#f0fdf4',
+                100: '#dcfce7',
+                200: '#bbf7d0',
+                300: '#86efac',
+                400: '#4ade80',
+                500: '#22c55e',
+                600: '#16a34a',
+                700: '#15803d',
+                800: '#166534',
+                900: '#14532d',
+              },
+              warning: {
+                50: '#fffbeb',
+                100: '#fef3c7',
+                200: '#fde68a',
+                300: '#fcd34d',
+                400: '#fbbf24',
+                500: '#f59e0b',
+                600: '#d97706',
+                700: '#b45309',
+                800: '#92400e',
+                900: '#78350f',
+              },
+              danger: {
+                50: '#fef2f2',
+                100: '#fee2e2',
+                200: '#fecaca',
+                300: '#fca5a5',
+                400: '#f87171',
+                500: '#ef4444',
+                600: '#dc2626',
+                700: '#b91c1c',
+                800: '#991b1b',
+                900: '#7f1d1d',
+              },
+            },
+            boxShadow: {
+              'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
+              'hard': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+              'glow': '0 0 15px rgba(59, 130, 246, 0.1)',
+            },
+            borderRadius: {
+              'xl': '1rem',
+              '2xl': '1.5rem',
+            },
+            transitionDuration: {
+              '250': '250ms',
+              '350': '350ms',
+            },
+          }
+        }
+      }
+    </script>
+    <!-- FullCalendar CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* Base styles */
+      .fc {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        --fc-border-color: rgb(229 231 235);
+        --fc-button-bg-color: rgb(59 130 246);
+        --fc-button-border-color: rgb(59 130 246);
+        --fc-button-hover-bg-color: rgb(37 99 235);
+        --fc-button-hover-border-color: rgb(37 99 235);
+        --fc-button-active-bg-color: rgb(29 78 216);
+        --fc-button-active-border-color: rgb(29 78 216);
+        --fc-event-bg-color: rgb(59 130 246);
+        --fc-event-border-color: rgb(37 99 235);
+        --fc-event-text-color: #ffffff;
+        --fc-today-bg-color: rgb(239 246 255);
+      }
+
+      /* Calendar container */
+      .calendar-container {
+        background: linear-gradient(145deg, #ffffff, #f8fafc);
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(10px);
+      }
+
+      .calendar-container:hover {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        transform: translateY(-2px);
+      }
+
+      /* Loading state */
+      #calendar.loading {
+        opacity: 0.5;
+        pointer-events: none;
+        position: relative;
+      }
+      
+      #calendar.loading::after {
+        content: "Loading...";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.2rem;
+        color: #4b5563;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 1rem 2rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Event styles */
+      .fc-event {
+        cursor: pointer;
+        border-radius: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border: none;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .fc-event:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
+      /* Priority colors */
+      .priority-high {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+      }
+
+      .priority-medium {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+      }
+
+      .priority-low {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: white;
+      }
+
+      /* Calendar header */
+      .fc-toolbar {
+        padding: 1.5rem;
+        background: white;
+        border-radius: 1rem 1rem 0 0;
+        margin-bottom: 0 !important;
+        border-bottom: 1px solid rgb(229 231 235);
+      }
+
+      .fc-toolbar-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+        text-transform: capitalize;
+      }
+
+      /* Calendar buttons */
+      .fc-button {
+        background-color: rgb(59 130 246);
+        color: white;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        border: none;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        text-transform: capitalize;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      }
+
+      .fc-button:hover {
+        background-color: rgb(37 99 235);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
+      .fc-button:active {
+        transform: translateY(0);
+      }
+
+      .fc-button-active {
+        background-color: rgb(29 78 216);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Calendar grid */
+      .fc-daygrid-day {
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: 0.5rem;
+      }
+
+      .fc-daygrid-day:hover {
+        background-color: rgb(249 250 251);
+      }
+
+      .fc-day-today {
+        background-color: rgb(239 246 255) !important;
+      }
+
+      .fc-day-today .fc-daygrid-day-number {
+        background-color: rgb(59 130 246);
+        color: white;
+        border-radius: 9999px;
+        padding: 0.25rem 0.5rem;
+        font-weight: 600;
+      }
+
+      /* Calendar body */
+      .fc-view-harness {
+        background: white;
+        border-radius: 0 0 1rem 1rem;
+      }
+
+      .fc-scrollgrid {
+        border-radius: 1rem;
+        overflow: hidden;
+      }
+
+      /* Event popover */
+      .fc-popover {
+        border-radius: 0.75rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        border: none;
+      }
+
+      /* Modal styles */
+      #taskModal {
+        backdrop-filter: blur(4px);
+      }
+
+      #taskModal .modal-content {
+        background: linear-gradient(145deg, #ffffff, #f8fafc);
+        border-radius: 1rem;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        transform: scale(0.95);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      #taskModal.show .modal-content {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      /* Status and Priority badges */
+      .status-badge, .priority-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: capitalize;
+      }
+
+      /* Scrollbar styling */
+      .fc-scroller::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+
+      .fc-scroller::-webkit-scrollbar-track {
+        background: rgb(243 244 246);
+        border-radius: 4px;
+      }
+
+      .fc-scroller::-webkit-scrollbar-thumb {
+        background: rgb(209 213 219);
+        border-radius: 4px;
+      }
+
+      .fc-scroller::-webkit-scrollbar-thumb:hover {
+        background: rgb(156 163 175);
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+      <div class="calendar-container bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft hover:shadow-hard transition-all duration-350">
+        <div class="p-6 md:p-8">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 md:mb-8">
+            <div>
+              <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
+                Task Calendar
+              </h1>
+              <p class="text-gray-600 text-sm md:text-base">
+                View and manage your tasks in a calendar view
+              </p>
+            </div>
+            <div class="mt-4 md:mt-0 flex space-x-2">
+              <button class="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors duration-250 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 shadow-sm hover:shadow-md">
+                <a href="{% url 'add_task' %}"><i class="fas fa-plus mr-2"></i> Add Task</a>
+              </button>
+              <a href="{% url 'dashboard' %}" class="px-4 py-2 bg-white text-gray-700 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors duration-250 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-2 shadow-sm hover:shadow-md">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+              </a>
+            </div>
+          </div>
+          <div id="calendar" class="rounded-xl overflow-hidden bg-white/50 backdrop-blur-sm"></div>
+        </div>
+      </div>
+    </div>
+
+<!-- Task Details Modal -->
+<div id="taskModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center z-50">
+  <div class="modal-content bg-white/90 backdrop-blur-sm rounded-2xl p-6 max-w-md w-full mx-4 shadow-soft">
+    <div class="flex justify-between items-center mb-6">
+      <h3 id="modalTitle" class="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">Task Details</h3>
+      <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 transition-colors duration-250 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-2 rounded-lg p-1">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="space-y-4 text-gray-700">
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800">Title:</h3>
+        <p class="ml-2 text-base" id="detailTitle"></p>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800">Description:</h3>
+        <p class="ml-2 text-base whitespace-pre-line" id="detailDescription"></p>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800">Due Date:</h3>
+        <p class="ml-2 text-base" id="detailDueDate"></p>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800">Priority:</h3>
+        <span id="detailPriority" class="ml-2 px-2 py-1 rounded-md text-sm font-medium"></span>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800">Category:</h3>
+        <p class="ml-2 text-base" id="detailCategory"></p>
+      </div>
+    </div>
+
+    <div class="mt-8 flex justify-end space-x-3">
+      <button type="button" onclick="closeModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-250 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-2 rounded-lg">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
+    <!-- FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+<script>
+  let currentEventId = null;  // Declare currentEventId globally so it can be accessed anywhere
+
+  function showModal(event) {
+  const modal = document.getElementById('taskModal');
+
+  document.getElementById('modalTitle').textContent = 'Task Details';
+  document.getElementById('detailTitle').textContent = event.title;
+  document.getElementById('detailDescription').textContent = event.extendedProps.description || 'No description provided.';
+  document.getElementById('detailDueDate').textContent = event.start.toLocaleDateString();
+  document.getElementById('detailCategory').textContent = event.extendedProps.category || 'Other';
+
+  const priorityElement = document.getElementById('detailPriority');
+  const priority = event.extendedProps.priority || 'low';
+  priorityElement.textContent = priority.charAt(0).toUpperCase() + priority.slice(1);
+  priorityElement.className = 'ml-2 px-2 py-1 rounded-md text-sm font-medium';
+
+  // Style based on priority
+  if (priority === 'high') {
+    priorityElement.classList.add('bg-red-200', 'text-red-800');
+  } else if (priority === 'medium') {
+    priorityElement.classList.add('bg-yellow-200', 'text-yellow-800');
+  } else {
+    priorityElement.classList.add('bg-green-200', 'text-green-800');
+  }
+
+  modal.classList.remove('hidden');
+  setTimeout(() => modal.classList.add('show'), 10);
+}
+
+
+function closeModal() {
+  const modal = document.getElementById('taskModal');
+  modal.classList.remove('show');
+  setTimeout(() => modal.classList.add('hidden'), 300);
+}
+
+function deleteTask() {
+  // Check if currentEventId is not null before proceeding
+  if (currentEventId === null) {
+    alert('No task selected for deletion');
+    return;
+  }
+
+  const event = calendar.getEventById(currentEventId);
+  if (confirm('Are you sure you want to delete this task?')) {
+    fetch(`/api/tasks/${currentEventId}/`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+      }
+    })
+    .then(response => {
+      if (response.ok) {
+        event.remove();
+        closeModal();
+        alert('Task deleted successfully!');
+      } else {
+        throw new Error('Failed to delete task');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Failed to delete task. Please try again.');
+    });
+  }
+}
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    var calendarEl = document.getElementById("calendar");
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: "dayGridMonth",
+        headerToolbar: {
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay",
+        },
+        events: {
+            url: "/api/tasks/calendar/",
+            method: "GET",
+            failure: function() {
+                alert('There was an error while fetching events!');
+            }
+        },
+        eventClick: function(info) {
+            info.jsEvent.preventDefault();
+            showModal(info.event);
+        },
+        eventDidMount: function(info) {
+            info.el.classList.add("priority-" + info.event.extendedProps.priority);
+            const categoryText = info.event.extendedProps.category ? `Category: ${info.event.extendedProps.category}` : '';
+            info.el.setAttribute('title', categoryText);
+        },
+        height: "auto",
+        aspectRatio: 1.8,
+        expandRows: true,
+        stickyHeaderDates: true,
+        nowIndicator: true,
+        dayMaxEvents: true,
+        eventTimeFormat: {
+            hour: "2-digit",
+            minute: "2-digit",
+            meridiem: false,
+        },
+        loading: function(isLoading) {
+            if (isLoading) {
+                document.getElementById('calendar').classList.add('loading');
+            } else {
+                document.getElementById('calendar').classList.remove('loading');
+            }
+        }
+    });
+    calendar.render();
+});
+
+
+</script>
+  </body>
+</html>

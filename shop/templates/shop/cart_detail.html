@@ -1,0 +1,203 @@
+{% extends "shop/shop_base.html" %}
+{% load static %}
+
+{% block sub_title %}Shopping Cart{% endblock %}
+
+{% block shop_content %}
+<style>
+    .cart-item {
+        transition: all 0.3s ease;
+    }
+    .cart-item:hover {
+        transform: translateX(5px);
+        background-color: rgba(79, 70, 229, 0.05);
+    }
+    .product-image {
+        transition: transform 0.3s ease;
+    }
+    .cart-item:hover .product-image {
+        transform: scale(1.1);
+    }
+    .price-tag {
+        background: linear-gradient(45deg, #4f46e5, #7c3aed);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .quantity-input {
+        transition: all 0.3s ease;
+    }
+    .quantity-input:focus {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+    }
+    .update-btn {
+        transition: all 0.3s ease;
+    }
+    .update-btn:hover {
+        transform: rotate(180deg);
+    }
+    .remove-btn {
+        transition: all 0.3s ease;
+    }
+    .remove-btn:hover {
+        transform: scale(1.2);
+    }
+    .total-price {
+        background: linear-gradient(45deg, #4f46e5, #7c3aed);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .continue-shopping-btn {
+        transition: all 0.3s ease;
+    }
+    .continue-shopping-btn:hover {
+        transform: translateX(-5px);
+    }
+    .checkout-btn {
+        background: linear-gradient(45deg, #4f46e5, #7c3aed);
+        transition: all 0.3s ease;
+    }
+    .checkout-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+    }
+    .empty-cart-icon {
+        animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+</style>
+
+<div class="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:shadow-2xl">
+    {% if cart_items %}
+    <div class="p-8">
+        <h2 class="text-3xl font-bold mb-8 text-gray-800 flex items-center">
+            <i class="fas fa-shopping-cart mr-3 text-indigo-500"></i>
+            Your Shopping Cart
+        </h2>
+        <div class="space-y-8">
+            {% for item in cart_items %}
+            <div class="cart-item flex items-center justify-between p-6 rounded-xl border border-gray-100">
+                <div class="flex items-center space-x-6">
+                    <div class="overflow-hidden rounded-lg">
+                        {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" 
+                             class="product-image w-24 h-24 object-cover">
+                        {% else %}
+                        <div class="w-24 h-24 bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                            <svg class="w-12 h-12 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-medium text-gray-800">{{ item.product.name }}</h3>
+                        <p class="text-lg price-tag">${{ item.product.price }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <form method="post" action="{% url 'shop:update_cart_quantity' item.product.id %}" 
+                          class="flex items-center space-x-3">
+                        {% csrf_token %}
+                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}"
+                               class="quantity-input w-20 px-4 py-2 border-2 border-indigo-100 rounded-lg focus:outline-none focus:border-indigo-500 text-center">
+                        <button type="submit" class="update-btn text-indigo-600 hover:text-indigo-800">
+                            <i class="fas fa-sync-alt text-xl"></i>
+                        </button>
+                    </form>
+                    <form method="post" action="{% url 'shop:remove_from_cart' item.product.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="remove-btn text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash-alt text-xl"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="mt-12 border-t pt-8">
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-xl font-medium text-gray-600">Subtotal:</span>
+                    <span class="text-2xl font-bold price-tag">${{ subtotal }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-xl font-medium text-gray-600">Shipping:</span>
+                    <span class="text-2xl font-bold price-tag">${{ shipping_cost }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-xl font-medium text-gray-600">Tax:</span>
+                    <span class="text-2xl font-bold price-tag">${{ tax }}</span>
+                </div>
+                <div class="flex justify-between items-center border-t pt-4">
+                    <span class="text-2xl font-bold text-gray-800">Total:</span>
+                    <span class="text-3xl font-bold total-price">${{ total }}</span>
+                </div>
+            </div>
+            
+            <div class="mt-12 flex justify-end space-x-6">
+                <a href="{% url 'shop:product_list' %}" 
+                   class="continue-shopping-btn px-8 py-4 border-2 border-indigo-100 rounded-xl text-indigo-600 font-medium hover:bg-indigo-50 focus:outline-none">
+                    <i class="fas fa-arrow-left mr-2"></i>Continue Shopping
+                </a>
+                <a href="{% url 'shop:checkout' %}" 
+                   class="checkout-btn px-8 py-4 text-white rounded-xl font-medium focus:outline-none">
+                    <i class="fas fa-lock mr-2"></i>Proceed to Checkout
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="p-12 text-center">
+        <div class="empty-cart-icon inline-block p-8 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100">
+            <i class="fas fa-shopping-cart text-6xl text-indigo-400"></i>
+        </div>
+        <h3 class="mt-6 text-2xl font-bold text-gray-800">Your cart is empty</h3>
+        <p class="mt-2 text-lg text-gray-600">Start adding some items to your cart to see them here.</p>
+        <div class="mt-8">
+            <a href="{% url 'shop:product_list' %}" 
+               class="inline-flex items-center px-8 py-4 border-2 border-indigo-100 rounded-xl text-indigo-600 font-medium hover:bg-indigo-50 focus:outline-none">
+                <i class="fas fa-store mr-2"></i>Start Shopping
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle quantity updates
+    document.querySelectorAll('.decrease-btn, .increase-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            const form = document.getElementById(`form-${productId}`);
+            const input = form.querySelector('.quantity-input');
+            let value = parseInt(input.value);
+            
+            if (this.classList.contains('decrease-btn') && value > 1) {
+                value--;
+            } else if (this.classList.contains('increase-btn')) {
+                value++;
+            }
+            
+            input.value = value;
+            form.submit();
+        });
+    });
+
+    // Handle direct input changes
+    document.querySelectorAll('.quantity-input').forEach(input => {
+        input.addEventListener('change', function() {
+            this.form.submit();
+        });
+    });
+});
+</script>
+{% endblock %} 

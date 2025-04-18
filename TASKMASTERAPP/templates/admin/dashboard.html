@@ -1,0 +1,109 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Total Users Card -->
+    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-gray-500 text-sm font-medium">Total Users</h3>
+            <span class="bg-blue-100 text-blue-700 p-2 rounded-lg">
+                <i class="fas fa-users"></i>
+            </span>
+        </div>
+        <p class="text-3xl font-bold text-gray-800">{{ total_users }}</p>
+        <p class="text-sm text-gray-500 mt-2">
+            <span class="text-green-500"><i class="fas fa-arrow-up"></i> {{ new_users_today }}</span>
+            new today
+        </p>
+    </div>
+
+    <!-- Total Tasks Card -->
+    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-gray-500 text-sm font-medium">Total Tasks</h3>
+            <span class="bg-purple-100 text-purple-700 p-2 rounded-lg">
+                <i class="fas fa-tasks"></i>
+            </span>
+        </div>
+        <p class="text-3xl font-bold text-gray-800">{{ total_tasks }}</p>
+        <p class="text-sm text-gray-500 mt-2">
+            <span class="text-green-500"><i class="fas fa-arrow-up"></i> {{ new_tasks_today }}</span>
+            new today
+        </p>
+    </div>
+
+    <!-- Active Users Card -->
+    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-gray-500 text-sm font-medium">Active Users</h3>
+            <span class="bg-green-100 text-green-700 p-2 rounded-lg">
+                <i class="fas fa-user-check"></i>
+            </span>
+        </div>
+        <p class="text-3xl font-bold text-gray-800">{{ active_users }}</p>
+        <p class="text-sm text-gray-500 mt-2">
+            <span class="text-blue-500"><i class="fas fa-clock"></i></span>
+            in last 24 hours
+        </p>
+    </div>
+
+    <!-- Feedback Count Card -->
+    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-gray-500 text-sm font-medium">New Feedback</h3>
+            <span class="bg-yellow-100 text-yellow-700 p-2 rounded-lg">
+                <i class="fas fa-comments"></i>
+            </span>
+        </div>
+        <p class="text-3xl font-bold text-gray-800">{{ new_feedback }}</p>
+        <p class="text-sm text-gray-500 mt-2">
+            <span class="text-orange-500"><i class="fas fa-bell"></i></span>
+            unread feedback
+        </p>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Recent Users -->
+    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Recent Users</h3>
+        <div class="space-y-4">
+            {% for user in recent_users %}
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center space-x-3">
+                    <img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}{% static 'assets/user-avatar.png' %}{% endif %}" 
+                         alt="★" class="w-10 h-10 rounded-full object-cover">
+                    <div>
+                        <p class="font-medium text-gray-800">{{ user.username }}</p>
+                        <p class="text-sm text-gray-500">{{ user.email }}</p>
+                    </div>
+                </div>
+                <span class="text-sm text-gray-500">{{ user.date_joined|timesince }} ago</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Recent Tasks -->
+    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Recent Tasks</h3>
+        <div class="space-y-4">
+            {% for task in recent_tasks %}
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div>
+                    <p class="font-medium text-gray-800">{{ task.title }}</p>
+                    <p class="text-sm text-gray-500">by {{ task.user.username }}</p>
+                </div>
+                <span class="px-3 py-1 rounded-full text-sm {% if task.status == 'completed' %}bg-green-100 text-green-700{% elif task.status == 'pending' %}bg-yellow-100 text-yellow-700{% else %}bg-red-100 text-red-700{% endif %}">
+                    {{ task.status }}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 8s linear infinite',
+                        'gradient': 'gradient 8s ease infinite',
+                        'shine': 'shine 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        gradient: {
+                            '0%, 100%': { 'background-position': '0% 50%' },
+                            '50%': { 'background-position': '100% 50%' },
+                        },
+                        shine: {
+                            '0%': { 'background-position': '200% center' },
+                            '100%': { 'background-position': '-200% center' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-gradient {
+                @apply bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-[length:200%_auto] animate-gradient;
+            }
+            .glass-effect {
+                @apply backdrop-blur-md bg-white/10 border border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)];
+            }
+            .card-hover {
+                @apply transition-all duration-500 hover:scale-105 hover:rotate-1 hover:shadow-2xl hover:border-white/40;
+            }
+            .image-border {
+                @apply border-4 border-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-[length:200%_auto] animate-gradient;
+            }
+            .shine-effect {
+                @apply relative overflow-hidden;
+            }
+            .shine-effect::after {
+                content: '';
+                @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent bg-[length:200%_auto] animate-shine;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 font-poppins text-white relative overflow-x-hidden">
+    
+    <div class="container mx-auto px-4 py-16 relative z-10">
+        <div class="max-w-6xl mx-auto">
+            <!-- Main Content -->
+            <div class="glass-effect rounded-3xl p-12 shadow-2xl animate-float relative overflow-hidden">
+                <!-- Decorative Elements -->
+                <div class="absolute -top-20 -right-20 w-40 h-40 bg-cyan-500/20 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl"></div>
+
+                <h1 class="text-7xl font-extrabold text-gradient mb-8 text-center tracking-tight">About Us</h1>
+                <p class="text-xl text-gray-300 mb-12 text-center leading-relaxed max-w-3xl mx-auto">
+                    Welcome to TaskMaster, your ultimate task management system designed to streamline productivity and help you achieve your goals efficiently.
+                </p>
+
+                <!-- Mission Section -->
+                <div class="glass-effect rounded-2xl p-10 mb-16 card-hover shine-effect">
+                    <h2 class="text-4xl font-bold text-gradient mb-6 text-center">Our Mission</h2>
+                    <p class="text-lg text-gray-300 leading-relaxed">
+                        At TaskMaster, our mission is to empower individuals and teams to organize, prioritize, and accomplish their tasks seamlessly. We provide intuitive tools and features to help you stay focused, meet deadlines, and achieve success in both personal and professional projects.
+                    </p>
+                </div>
+
+                <!-- Team Section -->
+                <h2 class="text-4xl font-bold text-gradient mb-12 text-center">Meet Our Team</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Team Member 1 -->
+                    <div class="glass-effect rounded-2xl p-8 card-hover group relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="relative w-40 h-40 mx-auto mb-6">
+                            <div class="absolute inset-0 image-border rounded-full"></div>
+                            <img src="../static/assets/P.jpg" alt="Keshav" class="w-full h-full rounded-full object-cover relative z-10 group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                        <h3 class="text-2xl font-bold text-gradient mb-2 text-center">Keshav Gupta</h3>
+                        <p class="text-gray-400 uppercase tracking-wider text-center">Project Manager</p>
+                    </div>
+
+                    <!-- Team Member 2 -->
+                    <div class="glass-effect rounded-2xl p-8 card-hover group relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="relative w-40 h-40 mx-auto mb-6">
+                            <div class="absolute inset-0 image-border rounded-full"></div>
+                            <img src="../static/assets/Q.avif" alt="Tarun" class="w-full h-full rounded-full object-cover relative z-10 group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                        <h3 class="text-2xl font-bold text-gradient mb-2 text-center">Tarun Mittal</h3>
+                        <p class="text-gray-400 uppercase tracking-wider text-center">Lead Developer</p>
+                    </div>
+
+                    <!-- Team Member 3 -->
+                    <div class="glass-effect rounded-2xl p-8 card-hover group relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="relative w-40 h-40 mx-auto mb-6">
+                            <div class="absolute inset-0 image-border rounded-full"></div>
+                            <img src="../static/assets/R.webp" alt="Gourav" class="w-full h-full rounded-full object-cover relative z-10 group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                        <h3 class="text-2xl font-bold text-gradient mb-2 text-center">Gourav Singla</h3>
+                        <p class="text-gray-400 uppercase tracking-wider text-center">UI/UX Designer</p>
+                    </div>
+
+                    <!-- Team Member 4 -->
+                    <div class="glass-effect rounded-2xl p-8 card-hover group relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div class="relative w-40 h-40 mx-auto mb-6">
+                            <div class="absolute inset-0 image-border rounded-full"></div>
+                            <img src="../static/assets/S.avif" alt="Rudraksh" class="w-full h-full rounded-full object-cover relative z-10 group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                        <h3 class="text-2xl font-bold text-gradient mb-2 text-center">Rudraksh</h3>
+                        <p class="text-gray-400 uppercase tracking-wider text-center">Marketing Specialist</p>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="glass-effect rounded-2xl p-6 mt-16 text-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 animate-gradient"></div>
+                    <p class="text-gray-400 relative z-10">&copy; 2025 TaskMaster. All Rights Reserved.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

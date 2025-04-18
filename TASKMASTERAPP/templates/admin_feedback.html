@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(to right, #e0eafc, #cfdef3);
+    }
+
+    .feedback-card {
+        backdrop-filter: blur(12px);
+        background: rgba(255, 255, 255, 0.65);
+        border-radius: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease-in-out;
+        padding: 1.2rem;
+    }
+
+    .feedback-card:hover {
+        transform: translateY(-6px) scale(1.01);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+    }
+
+    .avatar-circle {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #a18cd1, #fbc2eb);
+        color: white;
+        font-weight: 700;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .feedback-meta {
+        font-size: 0.8rem;
+        color: #666;
+    }
+
+    .card-text {
+        font-size: 0.95rem;
+        color: #333;
+        margin-top: 10px;
+    }
+
+    .empty-message {
+        padding: 2.5rem;
+        background: rgba(255, 255, 255, 0.75);
+        border-radius: 1.25rem;
+        font-size: 1.1rem;
+        color: #555;
+        text-shadow: 0 1px white;
+    }
+
+    .heading-glow {
+        font-size: 2.1rem;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(to right, #7F00FF, #E100FF);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .btn-dashboard {
+        display: block;
+        width: fit-content;
+        margin: 3rem auto 1rem;
+        padding: 0.6rem 1.5rem;
+        background: linear-gradient(135deg, #28a745, #6fdc8c);
+        border: none;
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .btn-dashboard:hover {
+        background: linear-gradient(135deg, #218838, #5cd47a);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(40, 167, 69, 0.35);
+        color: white;
+        text-decoration: none;
+    }
+
+    .head{
+        margin-top: 5rem;
+    }
+</style>
+
+<div class="container py-5 mx-3 mt-5 head">
+    <div class="text-center">
+        <h1 class="heading-glow">✨ User Feedbacks</h1>
+        <h3 class="text-muted">Thoughts, ideas, and love from your community</h3>
+    </div>
+
+    {% if feedbacks %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-4">
+            {% for feedback in feedbacks %}
+                <div class="col">
+                    <div class="feedback-card h-100">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="avatar-circle">
+                                {{ feedback.name|first|upper }}
+                            </div>
+                            <div>
+                                <h6 class="mb-0">{{ feedback.name }}</h6>
+                                <div class="feedback-meta">{{ feedback.email }}</div>
+                            </div>
+                        </div>
+                        <p class="card-text">“{{ feedback.message }}”</p>
+                        <div class="text-end mt-3">
+                            <small class="feedback-meta">🕒 {{ feedback.created_at|date:"M d, Y - g:i A" }}</small>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-message text-center mt-5 shadow">
+            <i class="bi bi-chat-left-dots-fill fs-1 text-primary"></i>
+            <p class="mt-3">No feedbacks yet... but your users will speak up soon!</p>
+        </div>
+    {% endif %}
+</div>
+
+<a href="{% url 'dashboard' %}" class="btn-dashboard">← Back to Dashboard</a>
+{% endblock %}

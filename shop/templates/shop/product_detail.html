@@ -1,0 +1,148 @@
+{% extends "shop/shop_base.html" %}
+{% load static %}
+
+{% block sub_title %}{{ product.name }}{% endblock %}
+
+{% block shop_content %}
+<style>
+    .product-image-container {
+        position: relative;
+        overflow: hidden;
+        border-radius: 1.5rem;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .product-image {
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .product-image-container:hover .product-image {
+        transform: scale(1.05);
+        filter: brightness(1.05);
+    }
+    .price-tag {
+        background: linear-gradient(45deg, #4f46e5, #7c3aed);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 2px 4px rgba(79, 70, 229, 0.1);
+    }
+    .add-to-cart-btn {
+        background: linear-gradient(45deg, #4f46e5, #7c3aed);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.1), 0 2px 4px -1px rgba(79, 70, 229, 0.06);
+    }
+    .add-to-cart-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.1), 0 4px 6px -2px rgba(79, 70, 229, 0.05);
+    }
+    .stock-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-weight: 500;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    }
+    .in-stock {
+        background: linear-gradient(45deg, #10b981, #059669);
+        color: white;
+    }
+    .out-of-stock {
+        background: linear-gradient(45deg, #ef4444, #dc2626);
+        color: white;
+    }
+    .detail-item {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: 1rem;
+        border-radius: 0.75rem;
+    }
+    .detail-item:hover {
+        transform: translateX(5px);
+        background-color: rgba(79, 70, 229, 0.05);
+    }
+    .detail-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.5rem;
+        background: linear-gradient(45deg, rgba(79, 70, 229, 0.1), rgba(124, 58, 237, 0.1));
+        color: #4f46e5;
+    }
+    .product-card {
+        background: white;
+        border-radius: 1.5rem;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.1), 0 15px 15px -5px rgba(0, 0, 0, 0.04);
+    }
+</style>
+
+<div class="product-card overflow-hidden">
+    <div class="md:flex">
+        <div class="md:w-1/2 product-image-container">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" 
+                 class="product-image w-full h-[32rem] object-cover">
+            {% else %}
+            <div class="w-full h-[32rem] bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                <svg class="w-32 h-32 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            </div>
+            {% endif %}
+        </div>
+        <div class="p-10 md:w-1/2">
+            <h1 class="text-4xl font-bold mb-6 text-gray-800 tracking-tight">{{ product.name }}</h1>
+            <p class="text-gray-600 mb-8 text-lg leading-relaxed">{{ product.description }}</p>
+            <div class="mb-8 flex items-center space-x-4">
+                <span class="text-4xl font-bold price-tag">${{ product.price }}</span>
+                {% if product.stock > 0 %}
+                <span class="stock-badge in-stock">
+                    <i class="fas fa-check-circle mr-2"></i>In Stock
+                </span>
+                {% else %}
+                <span class="stock-badge out-of-stock">
+                    <i class="fas fa-times-circle mr-2"></i>Out of Stock
+                </span>
+                {% endif %}
+            </div>
+            {% if product.stock > 0 %}
+            <form method="post" action="{% url 'shop:add_to_cart' product.id %}" class="mb-8">
+                {% csrf_token %}
+                <button type="submit" 
+                        class="add-to-cart-btn w-full text-white px-8 py-4 rounded-xl font-medium text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    <i class="fas fa-shopping-cart mr-2"></i>Add to Cart
+                </button>
+            </form>
+            {% endif %}
+            <div class="border-t border-gray-100 pt-8">
+                <h2 class="text-2xl font-bold mb-6 text-gray-800 tracking-tight">Product Details</h2>
+                <ul class="space-y-4 text-gray-600">
+                    <li class="detail-item flex items-center space-x-4">
+                        <div class="detail-icon">
+                            <i class="fas fa-tag"></i>
+                        </div>
+                        <div>
+                            <span class="font-medium text-gray-700">Category:</span> 
+                            <span class="ml-2">{{ product.category.name }}</span>
+                        </div>
+                    </li>
+                    <li class="detail-item flex items-center space-x-4">
+                        <div class="detail-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div>
+                            <span class="font-medium text-gray-700">Added:</span> 
+                            <span class="ml-2">{{ product.created_at|date:"F j, Y" }}</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

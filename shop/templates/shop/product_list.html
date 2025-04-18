@@ -1,0 +1,209 @@
+{% extends "shop/shop_base.html" %}
+{% load static %}
+
+{% block sub_title %}Products{% endblock %}
+
+{% block shop_content %}
+<style>
+    .product-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateY(0);
+        background: white;
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        width: 100%;
+        max-width: 420px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .product-image-container {
+        position: relative;
+        overflow: hidden;
+        border-radius: 1.5rem 1.5rem 0 0;
+        width: 100%;
+        aspect-ratio: 16/9;
+    }
+    .product-image {
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .product-card:hover .product-image {
+        transform: scale(1.05);
+        filter: brightness(1.05);
+    }
+    .price-tag {
+        background: linear-gradient(45deg, #4f46e5, #7c3aed);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 2px 4px rgba(79, 70, 229, 0.1);
+    }
+    .view-details-btn {
+        background: linear-gradient(45deg, #4f46e5, #7c3aed);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.1), 0 2px 4px -1px rgba(79, 70, 229, 0.06);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 0.875rem;
+        min-width: 140px;
+    }
+    .view-details-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.1), 0 4px 6px -2px rgba(79, 70, 229, 0.05);
+    }
+    .view-details-btn i {
+        margin-right: 0.5rem;
+        font-size: 1rem;
+    }
+    .stock-badge {
+        position: absolute;
+        bottom: 1rem;
+        right: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-weight: 500;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        z-index: 10;
+    }
+    .in-stock {
+        background: linear-gradient(45deg, #10b981, #059669);
+        color: white;
+    }
+    .out-of-stock {
+        background: linear-gradient(45deg, #ef4444, #dc2626);
+        color: white;
+    }
+    .category-badge {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(4px);
+        font-weight: 500;
+        color: #4f46e5;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        z-index: 10;
+        max-width: calc(100% - 2rem);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .pagination-btn {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .pagination-btn:hover {
+        transform: scale(1.1);
+    }
+    .product-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem;
+    }
+    .product-footer {
+        margin-top: auto;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+</style>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-4 max-w-7xl mx-auto">
+    {% for product in products %}
+    <div class="product-card group">
+        <div class="product-image-container">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" 
+                 class="product-image">
+            {% else %}
+            <div class="w-full h-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                <svg class="w-16 h-16 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            </div>
+            {% endif %}
+            <span class="category-badge" title="{{ product.category.name }}">
+                <i class="fas fa-tag mr-2"></i>{{ product.category.name }}
+            </span>
+            {% if product.stock > 0 %}
+            <span class="stock-badge in-stock">
+                <i class="fas fa-check-circle mr-2"></i>In Stock
+            </span>
+            {% else %}
+            <span class="stock-badge out-of-stock">
+                <i class="fas fa-times-circle mr-2"></i>Out of Stock
+            </span>
+            {% endif %}
+        </div>
+        <div class="product-content">
+            <h3 class="text-xl font-bold text-gray-800 mb-3 group-hover:text-indigo-600 transition-colors">
+                {{ product.name }}
+            </h3>
+            <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ product.description|truncatewords:20 }}</p>
+            <div class="product-footer">
+                <div class="flex justify-between items-center">
+                    <span class="text-2xl font-bold price-tag">${{ product.price }}</span>
+                    <a href="{{ product.get_absolute_url }}" 
+                       class="view-details-btn text-white font-medium">
+                        <i class="fas fa-eye"></i>View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-span-3 text-center py-16">
+        <div class="inline-block p-8 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100">
+            <svg class="w-16 h-16 text-indigo-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="text-xl text-gray-600">No products found.</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if is_paginated %}
+<div class="mt-12 flex justify-center">
+    <nav class="relative z-0 inline-flex rounded-lg shadow-lg bg-white p-2" aria-label="Pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" 
+           class="pagination-btn relative inline-flex items-center px-4 py-2 rounded-lg border border-indigo-100 text-sm font-medium text-indigo-600 hover:bg-indigo-50">
+            <i class="fas fa-chevron-left mr-2"></i> Previous
+        </a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+        <a href="?page={{ num }}" 
+           class="pagination-btn relative inline-flex items-center px-4 py-2 mx-1 rounded-lg text-sm font-medium 
+                  {% if page_obj.number == num %}bg-gradient-to-br from-indigo-600 to-purple-600 text-white
+                  {% else %}text-indigo-600 hover:bg-indigo-50{% endif %}">
+            {{ num }}
+        </a>
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" 
+           class="pagination-btn relative inline-flex items-center px-4 py-2 rounded-lg border border-indigo-100 text-sm font-medium text-indigo-600 hover:bg-indigo-50">
+            Next <i class="fas fa-chevron-right ml-2"></i>
+        </a>
+        {% endif %}
+    </nav>
+</div>
+{% endif %}
+{% endblock %} 
