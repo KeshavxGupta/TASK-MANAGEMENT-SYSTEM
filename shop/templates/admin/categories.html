@@ -1,92 +1,119 @@
 {% extends "admin/base_admin.html" %}
 {% load static %}
 
-{% block admin_title %}Categories Management{% endblock %}
+{% block title %}{{ admin_title }}{% endblock %}
 
-{% block admin_actions %}
-<a href="{% url 'admin:shop_category_add' %}" class="btn btn-primary">
-    <i class="fas fa-plus"></i> Add New Category
-</a>
-{% endblock %}
+{% block header %}{{ admin_title }}{% endblock %}
 
-{% block admin_content %}
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">Categories List</h3>
-        <div class="card-tools">
-            <form method="get" class="form-inline">
-                <input type="text" name="search" class="form-control form-control-sm mr-2" placeholder="Search categories..." value="{{ request.GET.search }}">
-                <button type="submit" class="btn btn-sm btn-primary">Search</button>
-            </form>
+{% block content %}
+<div class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+        <h3 class="text-2xl font-semibold text-gray-800">Categories</h3>
+        <div class="flex space-x-2">
+            <a href="{% url 'shop:admin_category_add' %}" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-md transition duration-150 ease-in-out">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Add Category
+            </a>
         </div>
     </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Slug</th>
-                        <th>Description</th>
-                        <th>Products Count</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for category in categories %}
-                    <tr>
-                        <td>{{ category.name }}</td>
-                        <td>{{ category.slug }}</td>
-                        <td>{{ category.description|truncatewords:20 }}</td>
-                        <td>{{ category.products.count }}</td>
-                        <td>
-                            <span class="badge badge-{{ category.is_active|yesno:'success,danger' }}">
-                                {{ category.is_active|yesno:'Active,Inactive' }}
-                            </span>
-                        </td>
-                        <td>
-                            <a href="{% url 'admin:shop_category_change' category.id %}" class="btn btn-sm btn-info">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <a href="{% url 'admin:shop_category_delete' category.id %}" class="btn btn-sm btn-danger">
-                                <i class="fas fa-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="text-center">No categories found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Slug</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Products</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for category in categories %}
+                <tr class="hover:bg-gray-50 transition-colors duration-200">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ category.name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ category.slug }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                        <div class="max-w-xs overflow-hidden">
+                            {{ category.description|truncatechars:50 }}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                            {{ category.products.count }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if category.is_active %}
+                        <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Active</span>
+                        {% else %}
+                        <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                        <a href="{% url 'shop:admin_category_edit' category.id %}" 
+                           class="inline-flex items-center px-3 py-1.5 bg-indigo-100 text-indigo-700 hover:bg-indigo-200 rounded-md transition duration-150 ease-in-out">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                        </a>
+                        <a href="{% url 'shop:admin_category_delete' category.id %}" 
+                           onclick="return confirm('Are you sure you want to delete this category?')"
+                           class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 rounded-md transition duration-150 ease-in-out">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
+                        <div class="flex flex-col items-center justify-center space-y-2">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                            </svg>
+                            <span>No categories found.</span>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
     {% if categories.has_other_pages %}
-    <div class="card-footer">
-        <nav>
-            <ul class="pagination justify-content-center mb-0">
+    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+        <nav class="flex justify-center">
+            <ul class="flex space-x-2">
                 {% if categories.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ categories.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">
-                        <i class="fas fa-chevron-left"></i>
+                <li>
+                    <a href="?page={{ categories.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+                       class="px-3 py-2 text-sm font-medium text-gray-500 bg-white rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
                     </a>
                 </li>
                 {% endif %}
 
                 {% for num in categories.paginator.page_range %}
-                <li class="page-item {% if categories.number == num %}active{% endif %}">
-                    <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">
+                <li>
+                    <a href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+                       class="px-3 py-2 text-sm font-medium {% if categories.number == num %}text-indigo-600 bg-indigo-50{% else %}text-gray-500 bg-white hover:bg-gray-50{% endif %} rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         {{ num }}
                     </a>
                 </li>
                 {% endfor %}
 
                 {% if categories.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ categories.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">
-                        <i class="fas fa-chevron-right"></i>
+                <li>
+                    <a href="?page={{ categories.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+                       class="px-3 py-2 text-sm font-medium text-gray-500 bg-white rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
                     </a>
                 </li>
                 {% endif %}

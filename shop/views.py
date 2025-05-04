@@ -1,14 +1,15 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, TemplateView, View
 from .models import Category, Product, Order, OrderItem, ShippingAddress
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.utils import timezone
 from django.db.models import Sum
 from django.urls import reverse
 from decimal import Decimal
 from django.http import JsonResponse
+from .forms import CategoryForm, ProductForm, OrderForm
 
 # Create your views here.
 
@@ -19,7 +20,7 @@ class ProductListView(ListView):
     paginate_by = 12
 
     def get_queryset(self):
-        queryset = Product.objects.filter(available=True)
+        queryset = Product.objects.filter(is_active=True)
         category_slug = self.kwargs.get('category_slug')
         if category_slug:
             self.category = get_object_or_404(Category, slug=category_slug)
@@ -38,6 +39,9 @@ class ProductDetailView(DetailView):
     model = Product
     template_name = 'shop/product_detail.html'
     context_object_name = 'product'
+    
+    def get_queryset(self):
+        return Product.objects.filter(is_active=True)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -367,3 +371,185 @@ def get_address(request, address_id):
         'pin_code': address.pin_code
     }
     return JsonResponse(data)
+
+def is_admin(user):
+    return user.is_authenticated and user.user_type == 'admin'
+
+@user_passes_test(is_admin, login_url='login')
+def admin_categories(request):
+    categories = Category.objects.all().order_by('name')
+    context = {
+        'categories': categories,
+        'admin_title': 'Categories Management',
+    }
+    return render(request, 'admin/categories.html', context)
+
+@user_passes_test(is_admin, login_url='login')
+def admin_products(request):
+    products = Product.objects.filter(is_active=True).order_by('-created_at')
+    categories = Category.objects.all()
+    
+    # Apply filters if provided
+    category_filter = request.GET.get('category')
+    if category_filter and category_filter != 'all':
+        products = products.filter(category_id=category_filter)
+    
+    context = {
+        'products': products,
+        'categories': categories,
+        'category_filter': category_filter,
+        'admin_title': 'Products Management',
+    }
+    return render(request, 'admin/products.html', context)
+
+@user_passes_test(is_admin, login_url='login')
+def admin_orders(request):
+    orders = Order.objects.all().order_by('-created_at')
+    
+    # Apply filters if provided
+    status_filter = request.GET.get('status')
+    if status_filter and status_filter != 'all':
+        orders = orders.filter(status=status_filter)
+    
+    context = {
+        'orders': orders,
+        'order_statuses': Order.STATUS_CHOICES,
+        'status_filter': status_filter,
+        'admin_title': 'Orders Management',
+    }
+    return render(request, 'admin/orders.html', context)
+
+@user_passes_test(is_admin, login_url='login')
+def admin_category_add(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Category added successfully.')
+            return redirect('shop:admin_categories')
+    else:
+        form = CategoryForm()
+    
+    context = {
+        'form': form,
+        'admin_title': 'Add New Category',
+    }
+    return render(request, 'admin/category_form.html', context)
+
+@user_passes_test(is_admin, login_url='login')
+def admin_category_edit(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Category updated successfully.')
+            return redirect('shop:admin_categories')
+    else:
+        form = CategoryForm(instance=category)
+    
+    context = {
+        'form': form,
+        'category': category,
+        'admin_title': 'Edit Category',
+    }
+    return render(request, 'admin/category_form.html', context)
+
+@user_passes_test(is_admin, login_url='login')
+def admin_category_delete(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    if request.method == 'POST':
+        category.delete()
+        messages.success(request, 'Category deleted successfully.')
+        return redirect('shop:admin_categories')
+    
+    context = {
+        'category': category,
+        'admin_title': 'Delete Category',
+    }
+    return render(request, 'admin/category_confirm_delete.html', context)
+
+@user_passes_test(is_admin, login_url='login')
+def admin_product_add(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save()
+            messages.success(request, f'Product "{product.name}" added successfully.')
+            return redirect('shop:admin_products')
+    else:
+        form = ProductForm()
+
+    context = {
+        'admin_title': 'Add New Product',
+        'form': form,
+    }
+    return render(request, 'admin/product_form.html', context)
+
+@user_passes_test(is_admin, login_url='login')
+def admin_product_edit(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            product = form.save()
+            messages.success(request, f'Product "{product.name}" updated successfully.')
+            return redirect('shop:admin_products')
+    else:
+        form = ProductForm(instance=product)
+    
+    context = {
+        'form': form,
+        'product': product,
+        'admin_title': 'Edit Product',
+    }
+    return render(request, 'admin/product_form.html', context)
+
+@user_passes_test(is_admin, login_url='login')
+def admin_product_delete(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    if request.method == 'POST':
+        product.delete()
+        messages.success(request, f'Product "{product.name}" deleted successfully.')
+        return redirect('shop:admin_products')
+    
+    context = {
+        'product': product,
+        'admin_title': 'Delete Product',
+    }
+    return render(request, 'admin/product_confirm_delete.html', context)
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_order_edit(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    
+    if request.method == 'POST':
+        form = OrderForm(request.POST, instance=order)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Order updated successfully.')
+            return redirect('shop:admin_orders')
+    else:
+        form = OrderForm(instance=order)
+    
+    context = {
+        'admin_title': 'Edit Order',
+        'form': form,
+        'order': order,
+    }
+    return render(request, 'admin/order_form.html', context)
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_order_delete(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    
+    if request.method == 'POST':
+        order.delete()
+        messages.success(request, 'Order deleted successfully.')
+        return redirect('shop:admin_orders')
+    
+    context = {
+        'admin_title': 'Delete Order',
+        'order': order,
+    }
+    return render(request, 'admin/order_confirm_delete.html', context)

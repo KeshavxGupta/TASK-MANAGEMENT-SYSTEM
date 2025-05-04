@@ -16,10 +16,12 @@
         margin: 0 auto;
         display: flex;
         flex-direction: column;
+        border: 1px solid rgba(79, 70, 229, 0.1);
     }
     .product-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        border-color: rgba(79, 70, 229, 0.2);
     }
     .product-image-container {
         position: relative;
@@ -27,6 +29,7 @@
         border-radius: 1.5rem 1.5rem 0 0;
         width: 100%;
         aspect-ratio: 16/9;
+        background: linear-gradient(45deg, #f3f4f6, #e5e7eb);
     }
     .product-image {
         transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -43,6 +46,7 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         text-shadow: 0 2px 4px rgba(79, 70, 229, 0.1);
+        font-weight: 700;
     }
     .view-details-btn {
         background: linear-gradient(45deg, #4f46e5, #7c3aed);
@@ -53,15 +57,17 @@
         justify-content: center;
         padding: 0.75rem 1.5rem;
         border-radius: 0.75rem;
-        font-weight: 500;
+        font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         font-size: 0.875rem;
         min-width: 140px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
     .view-details-btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.1), 0 4px 6px -2px rgba(79, 70, 229, 0.05);
+        background: linear-gradient(45deg, #4338ca, #6d28d9);
     }
     .view-details-btn i {
         margin-right: 0.5rem;
@@ -73,9 +79,10 @@
         right: 1rem;
         padding: 0.5rem 1rem;
         border-radius: 9999px;
-        font-weight: 500;
+        font-weight: 600;
         box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
         z-index: 10;
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
     .in-stock {
         background: linear-gradient(45deg, #10b981, #059669);
@@ -91,9 +98,10 @@
         left: 1rem;
         padding: 0.5rem 1rem;
         border-radius: 9999px;
-        background: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.95);
+        -webkit-backdrop-filter: blur(4px);
         backdrop-filter: blur(4px);
-        font-weight: 500;
+        font-weight: 600;
         color: #4f46e5;
         box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
         z-index: 10;
@@ -101,6 +109,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        border: 1px solid rgba(79, 70, 229, 0.1);
     }
     .pagination-btn {
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

@@ -4,8 +4,11 @@ from .models import Category, Product, Order, OrderItem, ShippingAddress
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'product_count')
-    search_fields = ('name', 'description')
+    list_display = ['name', 'slug', 'description', 'product_count', 'is_active']
+    search_fields = ['name', 'description']
+    list_filter = ['is_active']
+    list_editable = ['is_active']
+    prepopulated_fields = {'slug': ('name',)}
 
     def product_count(self, obj):
         return obj.products.count()
@@ -13,10 +16,11 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'price', 'stock', 'image_preview', 'available')
-    list_filter = ('category', 'available')
-    search_fields = ('name', 'description')
-    list_editable = ('price', 'stock', 'available')
+    list_display = ['name', 'slug', 'category', 'price', 'stock', 'is_active']
+    list_filter = ['category', 'is_active']
+    search_fields = ['name', 'description']
+    list_editable = ['price', 'stock', 'is_active']
+    prepopulated_fields = {'slug': ('name',)}
 
     def image_preview(self, obj):
         if obj.image:

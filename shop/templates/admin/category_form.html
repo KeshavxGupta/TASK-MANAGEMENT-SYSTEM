@@ -1,0 +1,111 @@
+{% extends "admin/base_admin.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+            <!-- Header -->
+            <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-white">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-gray-900">{{ admin_title }}</h3>
+                    <a href="{% url 'shop:admin_categories' %}" 
+                       class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Back to Categories
+                    </a>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <div class="p-6">
+                <form method="post" class="space-y-8">
+                    {% csrf_token %}
+                    
+                    <div class="space-y-6">
+                        <!-- Name Field -->
+                        <div class="space-y-2">
+                            <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-700">Name</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                {% render_field form.name class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150 ease-in-out" placeholder="Enter category name" %}
+                            </div>
+                            {% if form.name.errors %}
+                            <p class="mt-2 text-sm text-red-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                {{ form.name.errors }}
+                            </p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Slug Field -->
+                        <div class="space-y-2">
+                            <label for="{{ form.slug.id_for_label }}" class="block text-sm font-medium text-gray-700">Slug</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                {% render_field form.slug class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150 ease-in-out" placeholder="Enter URL-friendly slug" %}
+                            </div>
+                            {% if form.slug.errors %}
+                            <p class="mt-2 text-sm text-red-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                {{ form.slug.errors }}
+                            </p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Description Field -->
+                        <div class="space-y-2">
+                            <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700">Description</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                {% render_field form.description class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150 ease-in-out" rows="4" placeholder="Enter category description" %}
+                            </div>
+                            {% if form.description.errors %}
+                            <p class="mt-2 text-sm text-red-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                {{ form.description.errors }}
+                            </p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Active Toggle -->
+                        <div class="relative flex items-start">
+                            <div class="flex items-center h-5">
+                                {% render_field form.is_active class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 transition duration-150 ease-in-out" %}
+                            </div>
+                            <div class="ml-3">
+                                <label for="{{ form.is_active.id_for_label }}" class="font-medium text-gray-700">Active</label>
+                                <p class="text-sm text-gray-500">Enable or disable this category</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+                        <a href="{% url 'shop:admin_categories' %}" 
+                           class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Cancel
+                        </a>
+                        <button type="submit"
+                                class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

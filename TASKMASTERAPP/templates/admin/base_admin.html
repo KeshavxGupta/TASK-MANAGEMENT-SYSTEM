@@ -248,21 +248,17 @@
                     <!-- Shop Admin Section -->
                     <div class="mt-6 pt-4 border-t border-gray-700">
                         <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Shop Management</h2>
-                        <a href="{% url 'admin:shop_category_changelist' %}" class="nav-link flex items-center p-3 {% if request.resolver_match.url_name == 'shop_category_changelist' %}active{% endif %}">
+                        <a href="{% url 'shop:admin_categories' %}" class="nav-link flex items-center p-3 {% if request.resolver_match.url_name == 'admin_categories' %}active{% endif %}">
                             <i class="fas fa-tags w-6"></i>
                             <span>Categories</span>
                         </a>
-                        <a href="{% url 'admin:shop_product_changelist' %}" class="nav-link flex items-center p-3 {% if request.resolver_match.url_name == 'shop_product_changelist' %}active{% endif %}">
+                        <a href="{% url 'shop:admin_products' %}" class="nav-link flex items-center p-3 {% if request.resolver_match.url_name == 'admin_products' %}active{% endif %}">
                             <i class="fas fa-box w-6"></i>
                             <span>Products</span>
                         </a>
-                        <a href="{% url 'admin:shop_order_changelist' %}" class="nav-link flex items-center p-3 {% if request.resolver_match.url_name == 'shop_order_changelist' %}active{% endif %}">
+                        <a href="{% url 'shop:admin_orders' %}" class="nav-link flex items-center p-3 {% if request.resolver_match.url_name == 'admin_orders' %}active{% endif %}">
                             <i class="fas fa-shopping-cart w-6"></i>
                             <span>Orders</span>
-                        </a>
-                        <a href="{% url 'admin:shop_shippingaddress_changelist' %}" class="nav-link flex items-center p-3 {% if request.resolver_match.url_name == 'shop_shippingaddress_changelist' %}active{% endif %}">
-                            <i class="fas fa-truck w-6"></i>
-                            <span>Shipping Addresses</span>
                         </a>
                     </div>
                 </nav>
